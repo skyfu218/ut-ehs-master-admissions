@@ -20,7 +20,7 @@ python3 -m http.server 4173
 
 ## 發布
 
-`.firebaserc` 中的 `ut-ehs-master` 是預定的新 Firebase project ID；正式建立專案後如 ID 不同，須同步更新。
+網站以 Firebase Hosting multi-site 方式，獨立部署到 `ut-ehs-master` site；所在 Firebase project 為 `utaipei-lab-attendance`，不覆蓋該 project 的其他 Hosting site。
 
 ```bash
 firebase deploy --only hosting
