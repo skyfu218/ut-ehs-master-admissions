@@ -1,0 +1,16 @@
+const equipment=[
+ {k:'CATEGORY 01 / EXERCISE PHYSIOLOGY',t:'運動生理檢測器材',d:'量測心肺、代謝、血液、循環與神經肌肉反應。',i:'https://ut-ehs.web.app/assets/equipment/k5.webp',tags:['COSMED K5','12-lead ECG','Lactate Scout','Noraxon EMG']},
+ {k:'CATEGORY 02 / PERFORMANCE',t:'運動能力檢測器材',d:'分析力量、功率、跳躍、平衡、步態與三維動作。',i:'https://ut-ehs.web.app/assets/equipment/vicon.webp',tags:['VICON','AMTI Force Plate','Biodex','OptoJump']},
+ {k:'CATEGORY 03 / BODY COMPOSITION',t:'身體組成檢測器材',d:'評估骨質、脂肪、肌肉量與人體組成變化。',i:'https://ut-ehs.web.app/assets/equipment/dxa.webp',tags:['Lunar iDXA','BIA','Ultrasound','Anthropometry']},
+ {k:'CATEGORY 04 / TRAINING',t:'運動訓練器材',d:'支援跑步、水中運動、力量與視覺回饋訓練。',i:'https://ut-ehs.web.app/assets/equipment/flume.webp',tags:['Swimming Flume','High-speed Treadmill','Visual Feedback','Strength Training']},
+ {k:'CATEGORY 05 / RECOVERY',t:'疲勞恢復器材',d:'研究低溫、氧氣、水壓、循環加壓與恢復策略。',i:'https://ut-ehs.web.app/assets/experience/recovery-4.webp',tags:['Cryotherapy','Hyperbaric Oxygen','Hydro Massage','Compression']},
+ {k:'CATEGORY 06 / IMAGING',t:'影像攝影設備',d:'從高速影像到眼動追蹤，記錄肉眼難以辨識的動作細節。',i:'https://ut-ehs.web.app/assets/equipment/eyetracker.webp',tags:['High-speed Camera','Eye Tracker','Motion Capture','Video Analysis']},
+ {k:'CATEGORY 07 / PHYSICAL THERAPY',t:'物理治療相關器材',d:'支援功能評估、機能重建與治療介入研究。',i:'https://ut-ehs.web.app/assets/experience/room-treatment-current.jpg',tags:['BTE','Therapeutic Modalities','Rehabilitation','Functional Testing']},
+ {k:'CATEGORY 08 / ENVIRONMENT',t:'環境模擬器材',d:'控制溫度、濕度與環境條件，研究不同情境下的人體反應。',i:'https://ut-ehs.web.app/assets/environment/chamber-cycling.png',tags:['Environmental Chamber','Heat','Humidity','Altitude Simulation']}
+];
+const faculty=[
+ ['賴長琦','教授／系主任','健康促進、健康評估、健康管理、人體生理學'],['曾國維','教授','運動醫學、運動能力分析、動作控制、運動生物力學'],['陳永盛','教授','運動訓練、運動疲勞恢復、運動生理學'],['陳宗與','教授','運動營養學、運動生理學、運動與新陳代謝'],['曾玉華','副教授','運動藥物學、體育課程設計'],['張若寧','助理教授','運動心理學、應用運動心理學、研究法'],['傅思凱','助理教授','運動科技、體能監測與評估、運動健康科技研發'],['翁義軒','助理教授','運動傷害預防、動作優化訓練、姿勢矯正']
+];
+document.querySelector('#faculty-grid').innerHTML=faculty.map((f,i)=>`<article class="faculty-card"><span class="number">${String(i+1).padStart(2,'0')}</span><h3>${f[0]}</h3><p class="title">${f[1]}</p><p>${f[2]}</p></article>`).join('');
+document.querySelectorAll('.equipment-tabs button').forEach(btn=>btn.addEventListener('click',()=>{const x=equipment[+btn.dataset.index];document.querySelectorAll('.equipment-tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const img=document.querySelector('#equipment-image');img.src=x.i;img.alt=x.t;document.querySelector('#equipment-kicker').textContent=x.k;document.querySelector('#equipment-title').textContent=x.t;document.querySelector('#equipment-desc').textContent=x.d;document.querySelector('#equipment-tags').innerHTML=x.tags.map(t=>`<span>${t}</span>`).join('')}));
+const toggle=document.querySelector('.nav-toggle'),nav=document.querySelector('#nav');toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!open));nav.classList.toggle('open',!open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false')}));
