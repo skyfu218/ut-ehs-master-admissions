@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="legacy-sections.css">
 </head>
 <body>
   <a class="skip" href="#main">跳至主要內容</a>
@@ -81,22 +82,18 @@
       </div>
     </section>
 
-    <section class="equipment section dark-section" id="equipment">
-      <div class="section-head inverse"><p class="eyebrow">RESEARCH INFRASTRUCTURE</p><h2>完整研究設備，<br>讓問題可以被量測。</h2><p>八大類、59 項器材。從心肺代謝、動作捕捉、身體組成到環境模擬，支援研究生建立可重複的量測流程。</p></div>
-      <div class="equipment-feature">
-        <img id="equipment-image" src="https://ut-ehs.web.app/assets/equipment/k5.webp" alt="攜帶式運動能量分析儀">
-        <div><p id="equipment-kicker">CATEGORY 01 / EXERCISE PHYSIOLOGY</p><h3 id="equipment-title">運動生理檢測器材</h3><p id="equipment-desc">量測心肺、代謝、血液、循環與神經肌肉反應。</p><div id="equipment-tags" class="tags"><span>COSMED K5</span><span>12-lead ECG</span><span>Lactate Scout</span><span>Noraxon EMG</span></div></div>
-      </div>
-      <div class="equipment-tabs" role="tablist" aria-label="研究器材分類">
-        <button class="active" data-index="0">01 生理檢測</button><button data-index="1">02 能力檢測</button><button data-index="2">03 身體組成</button><button data-index="3">04 運動訓練</button><button data-index="4">05 疲勞恢復</button><button data-index="5">06 影像攝影</button><button data-index="6">07 物理治療</button><button data-index="7">08 環境模擬</button>
-      </div>
-      <p class="source-note">器材分類、名稱與用途依系上既有盤點整理；實際可用設備、預約與操作規範以系所當期公告為準。</p>
+    <section class="equipment-zone section" id="equipment">
+      <div class="section-head"><p class="eyebrow dark">SPORT SCIENCE EQUIPMENT</p><h2>運動科學器材區</h2><p>依《運動科學的跨域整合與實務應用》逐頁核對為八大類，共 59 項。點選分類後，向右滑即可逐一認識中英文器材名稱、正確照片與用途。</p></div>
+      <div class="equipment-featured" id="equipment-featured" aria-label="重點器材"></div>
+      <div class="equipment-tabs" id="equipment-tabs" role="tablist" aria-label="運動科學器材分類"></div>
+      <div class="equipment-panels" id="equipment-panels"></div>
+      <p class="source-note">器材分類、名稱、品牌型號及照片均依系上提供簡報第 52–66 頁逐項核對；用途採招生導讀式改寫，實際操作依課程、研究與專業人員指導為準。</p>
     </section>
 
-    <section class="faculty section" id="faculty">
-      <div class="section-head"><p class="eyebrow dark">FACULTY & ACADEMIC OUTPUT</p><h2>由研究者、臨床醫師與<br>跨域專家共同指導。</h2><p>8 位專任教師涵蓋運動科學、健康促進、營養、生物力學、心理與科技；兼任師資串連臺北市立聯合醫院及臨床現場。</p></div>
+    <section class="faculty-roster section" id="faculty">
+      <div class="section-head"><p class="eyebrow dark">OUR TEACHING TEAM</p><h2>專任與兼任師資，<br>一起撐起完整的專業學習。</h2><p>八位專任教師帶領核心課程，最新 115 學年度第 1 學期名冊另有 26 位兼任或合聘教師，把臨床、運動與健康專業帶進課堂。</p></div>
+      <div class="faculty-block"><div class="faculty-title"><span>08</span><div><p class="eyebrow dark">FULL-TIME FACULTY</p><h3>專任教師</h3></div></div><div class="roster-grid" id="faculty-grid"></div></div>
       <div class="hospital-strip"><div><span>20</span><p>位兼任／合聘教師來自<br><strong>臺北市立聯合醫院</strong></p></div><p>合作領域涵蓋急重症、復健醫學、內外科、精神醫學、營養、藥學、公共衛生與高齡照護，讓研究問題能與真實臨床需求對話。</p></div>
-      <div class="faculty-grid" id="faculty-grid"></div>
       <div class="academic-panel">
         <div><p class="eyebrow dark">ACADEMIC CAPACITY</p><h3>從研究計畫到公開成果</h3><p>教師成果涵蓋期刊論文、研究計畫、國際研討會、專書與專利。為避免將不完整名錄宣稱為全量，本網站以官方教師頁與系所既有成果庫作為持續更新入口。</p></div>
         <div class="academic-links"><a href="https://ehs.utaipei.edu.tw/p/412-1092-1145.php?Lang=zh-tw" target="_blank" rel="noreferrer"><span>專任教師</span>查看官方學術資料 ↗</a><a href="https://ut-ehs.web.app/?release=20261117-1#academic" target="_blank" rel="noreferrer"><span>完整成果庫</span>論文・計畫・專書・專利 ↗</a></div>
