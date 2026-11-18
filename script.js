@@ -39,6 +39,21 @@ if(makerVideo){
   makerVideoObserver.observe(makerVideo);
 }
 
+const adjunctGroups=document.querySelector('#adjunct-groups');
+async function loadAdjunctFaculty(){
+  if(!adjunctGroups)return;
+  try{
+    const response=await fetch('assets/data/adjunct-faculty.json?v=20261118-1');
+    if(!response.ok)throw new Error('adjunct faculty data');
+    const faculty=await response.json();
+    const groupOrder=['運動傷害防護','運動健身指導','運動健康科學研發'];
+    adjunctGroups.innerHTML=groupOrder.map(group=>{
+      const people=faculty.filter(person=>person.group===group);
+      return `<section><h4>${group}<span>${String(people.length).padStart(2,'0')}</span></h4>${people.map(person=>`<article><div><h3>${academicEscape(person.name)}</h3><span>${academicEscape(person.role)}</span></div>${person.organization?`<b>${academicEscape(person.organization)}</b>`:''}<p>${academicEscape(person.expertise||'')}${person.courses?`<small>${academicEscape(person.courses)}</small>`:''}</p></article>`).join('')}</section>`;
+    }).join('');
+  }catch(error){adjunctGroups.innerHTML='<p class="adjunct-loading">兼任與合聘師資暫時無法載入，請稍後重新整理。</p>';console.error(error);}
+}
+
 const academicLabels={publications:'學術發表',projects:'計畫',conferences:'研討會與專書',patents:'專利'};
 const academicEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let academicCatalog=[],academicCategory='projects',academicLimit=12,academicOwner='all',academicQuery='',academicVisibleRows=[];
@@ -75,5 +90,6 @@ academicMore?.addEventListener('click',()=>{academicLimit+=12;renderAcademicResu
 document.querySelector('.academic-close')?.addEventListener('click',()=>academicDetail.close());
 academicDetail?.addEventListener('click',event=>{if(event.target===academicDetail){const rect=academicDetail.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)academicDetail.close();}});
 loadAcademicExplorer();
+loadAdjunctFaculty();
 
 const toggle=document.querySelector('.nav-toggle'),nav=document.querySelector('#nav');toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!open));nav.classList.toggle('open',!open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false')}));
