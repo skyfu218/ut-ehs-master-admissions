@@ -39,4 +39,41 @@ if(makerVideo){
   makerVideoObserver.observe(makerVideo);
 }
 
+const academicLabels={publications:'學術發表',projects:'計畫',conferences:'研討會與專書',patents:'專利'};
+const academicEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+let academicCatalog=[],academicCategory='projects',academicLimit=12,academicOwner='all',academicQuery='',academicVisibleRows=[];
+const academicResults=document.querySelector('#academic-results'),academicCount=document.querySelector('#academic-count'),academicMore=document.querySelector('#academic-more'),academicDetail=document.querySelector('#academic-detail'),academicDetailBody=document.querySelector('#academic-detail-body');
+const academicLink=(url,label)=>url?`<a href="${academicEscape(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:'';
+function openAcademicDetail(item){
+  const categoryLabel=academicLabels[item.category]||'學術成果';
+  academicDetailBody.innerHTML=`<p class="eyebrow dark">${academicEscape(item.owner)} / ${categoryLabel}</p><h2>${academicEscape(item.title)}</h2><p>${academicEscape(item.meta||'')}</p>${item.summary?`<h3>${academicEscape(item.summaryLabel||'計畫／成果摘要')}</h3><p>${academicEscape(item.summary)}</p>`:''}${item.doi?`<p class="academic-doi"><b>DOI</b> ${academicEscape(item.doi)}</p>`:''}${item.citation?`<details class="academic-citation"><summary>完整書目</summary><p>${academicEscape(item.citation)}</p></details>`:''}${item.sharedProjectNote?`<p class="academic-detail-note">${academicEscape(item.sharedProjectNote)}</p>`:''}${item.agency?`<p>委託單位：${academicEscape(item.agency)}<br>執行期間：${academicEscape(item.period)}<br>參與角色：${academicEscape(item.role)}</p>`:''}${item.images?.length?`<div class="academic-detail-images">${item.images.map((url,index)=>`<figure><img src="${academicEscape(url)}" loading="lazy" alt="${academicEscape(item.imageCaptions?.[index]||item.title)}">${item.imageCaptions?.[index]?`<figcaption>${academicEscape(item.imageCaptions[index])}</figcaption>`:''}</figure>`).join('')}</div>`:''}${item.videos?.map(video=>`<h3>${academicEscape(video.title)}</h3><video controls playsinline preload="none" poster="${academicEscape(video.poster||'')}"><source src="${academicEscape(video.src)}" type="video/mp4"></video>${academicLink(video.src,'另開影片')}`).join('')||''}<div class="academic-source-actions">${academicLink(item.fullTextLink,'開放全文')}${academicLink(item.link,['publications','conferences'].includes(item.category)?'原文／出版頁面':'閱讀公開來源')}${academicLink(item.abstractLicense,'摘要授權')}${item.sourceUrl&&item.sourceUrl!==item.link?academicLink(item.sourceUrl,item.sourceLabel||'書目來源'):''}</div>${!item.summary&&['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">目前尚未查得可收錄的公開摘要，請由原文或書目來源查閱；不以題目推測研究結果。</p>':''}${item.previewLink?academicLink(item.previewLink,'出版社官方試閱'):''}${item.documents?.map(document=>academicLink(document.src,academicEscape(document.title))).join('')||''}${!item.summary&&!item.images?.length&&!item.link&&!['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">此筆依 CV 成果名錄呈現，尚無另附摘要或照片。</p>':''}`;
+  academicDetail.showModal();
+}
+function renderAcademicResults(){
+  if(!academicResults)return;
+  academicVisibleRows=academicCatalog.filter(item=>item.category===academicCategory&&(academicOwner==='all'||item.owner===academicOwner)&&JSON.stringify(item).toLowerCase().includes(academicQuery.toLowerCase()));
+  academicCount.textContent=`${academicLabels[academicCategory]}・符合條件 ${academicVisibleRows.length} 筆`;
+  academicResults.innerHTML=academicVisibleRows.length?academicVisibleRows.slice(0,academicLimit).map((item,index)=>`<button class="academic-result" data-academic-result="${index}"><div><h3>${academicEscape(item.title)}</h3><p>${academicEscape(item.owner)}${item.year?' / '+academicEscape(item.year):''}　${academicEscape(item.meta||'')}</p></div><span>查看 ＋</span></button>`).join(''):'<p class="academic-empty">目前沒有符合條件的已收錄成果。</p>';
+  academicMore.hidden=academicVisibleRows.length<=academicLimit;
+  document.querySelectorAll('[data-academic-result]').forEach(button=>button.addEventListener('click',()=>openAcademicDetail(academicVisibleRows[Number(button.dataset.academicResult)])));
+}
+async function loadAcademicExplorer(){
+  if(!academicResults)return;
+  try{
+    const response=await fetch('assets/data/faculty-academic.json?v=20261118-1');
+    if(!response.ok)throw new Error('academic data');
+    academicCatalog=await response.json();
+    const owners=[...new Set(academicCatalog.map(item=>item.owner).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+    document.querySelector('#academic-owner').insertAdjacentHTML('beforeend',owners.map(name=>`<option value="${academicEscape(name)}">${academicEscape(name)}</option>`).join(''));
+    renderAcademicResults();
+  }catch(error){academicCount.textContent='學術成果暫時無法載入，請稍後重新整理。';console.error(error);}
+}
+document.querySelectorAll('[data-academic-category]').forEach(button=>button.addEventListener('click',()=>{academicCategory=button.dataset.academicCategory;academicLimit=12;document.querySelectorAll('[data-academic-category]').forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-pressed',String(active));});renderAcademicResults();}));
+document.querySelector('#academic-search')?.addEventListener('input',event=>{academicQuery=event.target.value;academicLimit=12;renderAcademicResults();});
+document.querySelector('#academic-owner')?.addEventListener('change',event=>{academicOwner=event.target.value;academicLimit=12;renderAcademicResults();});
+academicMore?.addEventListener('click',()=>{academicLimit+=12;renderAcademicResults();});
+document.querySelector('.academic-close')?.addEventListener('click',()=>academicDetail.close());
+academicDetail?.addEventListener('click',event=>{if(event.target===academicDetail){const rect=academicDetail.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)academicDetail.close();}});
+loadAcademicExplorer();
+
 const toggle=document.querySelector('.nav-toggle'),nav=document.querySelector('#nav');toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!open));nav.classList.toggle('open',!open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false')}));

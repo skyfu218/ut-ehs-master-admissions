@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20261118-2">
   <link rel="stylesheet" href="legacy-sections.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
     </a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="nav">選單</button>
     <nav id="nav" aria-label="主要導覽">
-      <a href="#dates">重要時程</a><a href="#global">國際研究</a><a href="#research">研究領域</a><a href="#equipment">研究設備</a><a href="#faculty">師資成果</a>
+      <a href="#dates">重要時程</a><a href="#global">國際研究</a><a href="#research">研究領域</a><a href="#equipment">研究設備</a><a href="#faculty">師資</a><a href="#academic">學術成果</a>
       <a class="nav-cta" href="https://admission.utaipei.edu.tw/p/404-1033-136189.php?Lang=zh-tw" target="_blank" rel="noreferrer">查看官方簡章 ↗</a>
     </nav>
   </header>
@@ -94,10 +94,14 @@
       <div class="section-head"><p class="eyebrow dark">OUR TEACHING TEAM</p><h2>專任與兼任師資，<br>一起撐起完整的專業學習。</h2><p>八位專任教師帶領核心課程，最新 115 學年度第 1 學期名冊另有 26 位兼任或合聘教師，把臨床、運動與健康專業帶進課堂。</p></div>
       <div class="faculty-block"><div class="faculty-title"><span>08</span><div><p class="eyebrow dark">FULL-TIME FACULTY</p><h3>專任教師</h3></div></div><div class="roster-grid" id="faculty-grid"></div></div>
       <div class="hospital-strip"><div><span>20</span><p>位兼任／合聘教師來自<br><strong>臺北市立聯合醫院</strong></p></div><p>合作領域涵蓋急重症、復健醫學、內外科、精神醫學、營養、藥學、公共衛生與高齡照護，讓研究問題能與真實臨床需求對話。</p></div>
-      <div class="academic-panel">
-        <div><p class="eyebrow dark">ACADEMIC CAPACITY</p><h3>從研究計畫到公開成果</h3><p>教師成果涵蓋期刊論文、研究計畫、國際研討會、專書與專利。為避免將不完整名錄宣稱為全量，本網站以官方教師頁與系所既有成果庫作為持續更新入口。</p></div>
-        <div class="academic-links"><a href="https://ehs.utaipei.edu.tw/p/412-1092-1145.php?Lang=zh-tw" target="_blank" rel="noreferrer"><span>專任教師</span>查看官方學術資料 ↗</a><a href="https://ut-ehs.web.app/?release=20261117-1#academic" target="_blank" rel="noreferrer"><span>完整成果庫</span>論文・計畫・專書・專利 ↗</a></div>
-      </div>
+    </section>
+
+    <section class="academic-explorer section" id="academic">
+      <div class="academic-explorer-head"><div><p class="eyebrow">ACADEMIC CAPACITY</p><h2>學術量能，<br>從問題走向成果。</h2></div><p>從計畫摘要、論文到專利，看看運動專業如何累積成可分享的知識。</p></div>
+      <div class="academic-filters" aria-label="成果分類"><button data-academic-category="publications" aria-pressed="false">學術發表</button><button class="active" data-academic-category="projects" aria-pressed="true">計畫</button><button data-academic-category="conferences" aria-pressed="false">研討會與專書</button><button data-academic-category="patents" aria-pressed="false">專利</button></div>
+      <div class="academic-search-row"><input id="academic-search" type="search" placeholder="搜尋研究主題、關鍵字…" aria-label="搜尋學術成果"><select id="academic-owner" aria-label="選擇成果資料來源"><option value="all">全部已收錄教師</option></select></div>
+      <p class="academic-result-count" id="academic-count" aria-live="polite">正在載入學術成果…</p><div id="academic-results"></div><button id="academic-more" class="academic-more" hidden>載入更多成果 ↓</button>
+      <p class="academic-note">資料依教師 CV、校方著作表、作者識別資料及出版來源整理，非全系完整成果總量。摘要標示為導讀、原文或節錄；未公開者保留名錄。原文全文可能需要圖書館權限。</p>
     </section>
 
     <section class="cta section">
@@ -105,7 +109,8 @@
       <div><a class="button primary" href="https://admission.utaipei.edu.tw/p/404-1033-136189.php?Lang=zh-tw" target="_blank" rel="noreferrer">閱讀 116 學年度簡章 ↗</a><a class="button ghost" href="https://ehs.utaipei.edu.tw/" target="_blank" rel="noreferrer">前往系所官網 ↗</a></div>
     </section>
   </main>
+  <dialog id="academic-detail"><button class="academic-close" aria-label="關閉學術成果內容">✕</button><div id="academic-detail-body"></div></dialog>
   <footer><div><strong>臺北市立大學 運動健康科學系</strong><p>天母校區｜臺北市士林區忠誠路二段 101 號<br>招生洽詢：(02) 2871-8288 分機 6402</p></div><div><a href="https://ehs.utaipei.edu.tw/" target="_blank" rel="noreferrer">系所官網</a><a href="https://admission.utaipei.edu.tw/" target="_blank" rel="noreferrer">招生組</a><p>招生規定以學校正式公告為準。</p></div></footer>
-  <script src="script.js"></script>
+  <script src="script.js?v=20261118-2"></script>
 </body>
 </html>
