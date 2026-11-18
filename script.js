@@ -30,4 +30,13 @@ document.querySelector('#faculty-grid').innerHTML=faculty.map(([name,role,group,
 function renderEcss(){const target=document.querySelector('#global');if(!target)return;const events={2025:{date:'2025.07.01–07.04',zh:'第 30 屆歐洲運動科學學院年會',en:'The 30th Annual Congress of the European College of Sport Science',place:'義大利里米尼｜Palacongressi di Rimini, Rimini, Italy'},2024:{date:'2024.07.02–07.05',zh:'第 29 屆歐洲運動科學學院年會',en:'The 29th Annual Congress of the European College of Sport Science',place:'英國蘇格蘭格拉斯哥｜Scottish Event Campus, Glasgow, Scotland, UK'}};target.className='ecss section';target.innerHTML=`<div class="ecss-intro"><p class="eyebrow dark">GLOBAL CLASSROOM / ECSS</p><h2>教師帶領學生<br>出席國際學術研討會</h2><p>我們把專業知識帶到國際重要的運動科學與運動醫學研討會，接觸最新研究、與各國學者交流，也讓學生實際站上國際舞臺。</p><blockquote>從全英文海報與口頭發表，到回答提問、交換研究觀點；這趟旅程讓學生練習勇敢表達，也把世界帶回自己的學習與研究。</blockquote><div class="ecss-values"><span><b>01</b>全英文發表</span><span><b>02</b>國際學術交流</span><span><b>03</b>研究新知</span><span><b>04</b>師生共同成長</span></div></div><div class="ecss-years">${['2025','2024'].map(year=>{const e=events[year];return `<article><header><span>${year}</span><div><small>${e.date}</small><h3>${e.zh}</h3><p>${e.en}</p><a href="https://sport-science.org/" target="_blank" rel="noreferrer">${e.place} ↗</a></div></header><p class="swipe-hint">向右滑看更多現場照片 <b>→</b></p><div class="ecss-gallery">${ecss.filter(x=>x[0]===year).map((x,i)=>`<figure class="${i===0?'featured':''}">${x[4]?`<video controls playsinline preload="metadata" poster="${asset(x[3])}"><source src="${asset(x[4])}" type="video/mp4"></video>`:`<img src="${asset(x[3])}" alt="${x[1]}" loading="lazy">`}<figcaption><b>${x[1]}</b><span>${x[2]}</span></figcaption></figure>`).join('')}</div></article>`}).join('')}</div><p class="source-note">會名、日期及地點依 ECSS 官方資料；照片由系上提供之「2024 ECSS」與「2025 ECSS」資料夾選輯。</p>`}
 renderEcss();
 
+const makerVideo=document.querySelector('.maker-video');
+if(makerVideo){
+  const makerVideoObserver=new IntersectionObserver(([entry])=>{
+    if(entry.isIntersecting){makerVideo.play().catch(()=>{});}
+    else{makerVideo.pause();}
+  },{threshold:.2});
+  makerVideoObserver.observe(makerVideo);
+}
+
 const toggle=document.querySelector('.nav-toggle'),nav=document.querySelector('#nav');toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!open));nav.classList.toggle('open',!open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false')}));
