@@ -54,18 +54,32 @@ function renderGlobalConferences(){
   const icsstGallery=icsstPhotos.map((x,i)=>`<figure class="${i===0?'featured':''}"><img src="assets/icsst-2026/icsst-${x[0]}.jpg" alt="${x[1]}" loading="lazy"><figcaption><b>${x[1]}</b><span>${x[2]}</span></figcaption></figure>`).join('');
   const icsstList=icsstPresentations.map((x,i)=>`<li><span>${String(i+1).padStart(2,'0')}</span><div><b>${x[2]}</b><small>${x[3]}</small><p>主要報告者｜${x[0]} <em>${x[1]}</em></p></div></li>`).join('');
   target.className='ecss section';
-  target.innerHTML=`<div class="ecss-intro"><p class="eyebrow dark">GLOBAL CLASSROOM / ICSST・ECSS</p><h2>教師帶領學生<br>出席國際學術研討會</h2><p>我們把專業知識帶到國際重要的運動科學與運動醫學研討會，接觸最新研究、與各國學者交流，也讓學生實際站上國際舞臺。</p><blockquote>從全英文海報與口頭發表，到回答提問、交換研究觀點；這趟旅程讓學生練習勇敢表達，也把世界帶回自己的學習與研究。</blockquote><div class="ecss-values"><span><b>01</b>全英文發表</span><span><b>02</b>國際學術交流</span><span><b>03</b>研究新知</span><span><b>04</b>師生共同成長</span></div></div><div class="ecss-years"><article class="icsst-event"><header><span>2026</span><div><small>2026.04.24</small><h3>國際運動科學與科技研討會</h3><p>International Conference on Sports Science and Technology (ICSST)</p><b class="conference-place">日本沖繩｜Okinawa, Japan</b></div></header><div class="icsst-summary"><div><strong>10</strong><span>研究發表</span></div><p>研究生以口頭與海報形式，分享運動生物力學、神經肌肉控制、智慧感測、運動表現、健康促進與恢復科學等研究成果。</p></div><p class="swipe-hint">向右滑看更多現場照片 <b>→</b></p><div class="ecss-gallery">${icsstGallery}</div><section class="icsst-program"><div><p class="eyebrow dark">PRESENTATION PROGRAM</p><h4>研究生發表清單</h4><p>依附件整理主要報告者與中英文題目。</p></div><ol>${icsstList}</ol></section></article>${['2025','2024'].map(year=>{const e=events[year];return `<article><header><span>${year}</span><div><small>${e.date}</small><h3>${e.zh}</h3><p>${e.en}</p><a href="https://sport-science.org/" target="_blank" rel="noreferrer">${e.place} ↗</a></div></header><p class="swipe-hint">向右滑看更多現場照片 <b>→</b></p><div class="ecss-gallery">${ecss.filter(x=>x[0]===year).map((x,i)=>`<figure class="${i===0?'featured':''}">${x[4]?`<video controls playsinline preload="metadata" poster="${asset(x[3])}"><source src="${asset(x[4])}" type="video/mp4"></video>`:`<img src="${asset(x[3])}" alt="${x[1]}" loading="lazy">`}<figcaption><b>${x[1]}</b><span>${x[2]}</span></figcaption></figure>`).join('')}</div></article>`}).join('')}</div><p class="source-note">ICSST 2026 發表清單與照片由系上提供；ECSS 會名、日期及地點依官方資料，照片由系上提供之「2024 ECSS」與「2025 ECSS」資料夾選輯。</p>`;
+  target.innerHTML=`<div class="ecss-intro"><p class="eyebrow dark">GLOBAL CLASSROOM / ICSST・ECSS</p><h2>教師帶領學生<br>出席國際學術研討會</h2><p>我們把專業知識帶到國際重要的運動科學與運動醫學研討會，接觸最新研究、與各國學者交流，也讓學生實際站上國際舞臺。</p><blockquote>從全英文海報與口頭發表，到回答提問、交換研究觀點；這趟旅程讓學生練習勇敢表達，也把世界帶回自己的學習與研究。</blockquote><div class="ecss-values"><span><b>01</b>全英文發表</span><span><b>02</b>國際學術交流</span><span><b>03</b>研究新知</span><span><b>04</b>師生共同成長</span></div></div><div class="ecss-years"><article class="icsst-event"><header><span>2026</span><div><small>2026.04.24</small><h3>國際運動科學與科技研討會</h3><p>International Conference on Sports Science and Technology (ICSST)</p><b class="conference-place">日本沖繩｜Okinawa, Japan</b></div></header><div class="icsst-summary"><div><strong>10</strong><span>研究發表</span></div><p>研究生以口頭與海報形式，分享運動生物力學、神經肌肉控制、智慧感測、運動表現、健康促進與恢復科學等研究成果。</p></div><p class="swipe-hint">向右滑看更多現場照片 <b>→</b></p><div class="ecss-gallery">${icsstGallery}</div><details class="icsst-program"><summary><div><p class="eyebrow dark">PRESENTATION PROGRAM</p><h4>研究生發表清單</h4><p>點選展開主要報告者與中英文題目</p></div><span class="icsst-program-toggle"><b>10</b> 筆發表<em></em></span></summary><ol>${icsstList}</ol></details></article>${['2025','2024'].map(year=>{const e=events[year];return `<article><header><span>${year}</span><div><small>${e.date}</small><h3>${e.zh}</h3><p>${e.en}</p><a href="https://sport-science.org/" target="_blank" rel="noreferrer">${e.place} ↗</a></div></header><p class="swipe-hint">向右滑看更多現場照片 <b>→</b></p><div class="ecss-gallery">${ecss.filter(x=>x[0]===year).map((x,i)=>`<figure class="${i===0?'featured':''}">${x[4]?`<video controls playsinline preload="metadata" poster="${asset(x[3])}"><source src="${asset(x[4])}" type="video/mp4"></video>`:`<img src="${asset(x[3])}" alt="${x[1]}" loading="lazy">`}<figcaption><b>${x[1]}</b><span>${x[2]}</span></figcaption></figure>`).join('')}</div></article>`}).join('')}</div><p class="source-note">ICSST 2026 發表清單與照片由系上提供；ECSS 會名、日期及地點依官方資料，照片由系上提供之「2024 ECSS」與「2025 ECSS」資料夾選輯。</p>`;
 }
 renderGlobalConferences();
 
-const makerVideo=document.querySelector('.maker-video');
-if(makerVideo){
-  const makerVideoObserver=new IntersectionObserver(([entry])=>{
-    if(entry.isIntersecting){makerVideo.play().catch(()=>{});}
-    else{makerVideo.pause();}
-  },{threshold:.2});
-  makerVideoObserver.observe(makerVideo);
+const ambientVideoObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  const video=entry.target;
+  if(entry.isIntersecting){video.play().catch(()=>{});}
+  else{video.pause();}
+}),{threshold:.18});
+function setupAmbientVideos(root=document){
+  root.querySelectorAll('video').forEach(video=>{
+    video.autoplay=true;
+    video.muted=true;
+    video.defaultMuted=true;
+    video.loop=true;
+    video.playsInline=true;
+    video.setAttribute('muted','');
+    video.setAttribute('loop','');
+    video.setAttribute('playsinline','');
+    if(!video.dataset.ambientReady){
+      video.dataset.ambientReady='true';
+      ambientVideoObserver.observe(video);
+    }
+  });
 }
+setupAmbientVideos();
 
 const adjunctGroups=document.querySelector('#adjunct-groups');
 async function loadAdjunctFaculty(){
@@ -90,6 +104,7 @@ const academicLink=(url,label)=>url?`<a href="${academicEscape(url)}" target="_b
 function openAcademicDetail(item){
   const categoryLabel=academicLabels[item.category]||'學術成果';
   academicDetailBody.innerHTML=`<p class="eyebrow dark">${academicEscape(item.owner)} / ${categoryLabel}</p><h2>${academicEscape(item.title)}</h2><p>${academicEscape(item.meta||'')}</p>${item.summary?`<h3>${academicEscape(item.summaryLabel||'計畫／成果摘要')}</h3><p>${academicEscape(item.summary)}</p>`:''}${item.doi?`<p class="academic-doi"><b>DOI</b> ${academicEscape(item.doi)}</p>`:''}${item.citation?`<details class="academic-citation"><summary>完整書目</summary><p>${academicEscape(item.citation)}</p></details>`:''}${item.sharedProjectNote?`<p class="academic-detail-note">${academicEscape(item.sharedProjectNote)}</p>`:''}${item.agency?`<p>委託單位：${academicEscape(item.agency)}<br>執行期間：${academicEscape(item.period)}<br>參與角色：${academicEscape(item.role)}</p>`:''}${item.images?.length?`<div class="academic-detail-images">${item.images.map((url,index)=>`<figure><img src="${academicEscape(url)}" loading="lazy" alt="${academicEscape(item.imageCaptions?.[index]||item.title)}">${item.imageCaptions?.[index]?`<figcaption>${academicEscape(item.imageCaptions[index])}</figcaption>`:''}</figure>`).join('')}</div>`:''}${item.videos?.map(video=>`<h3>${academicEscape(video.title)}</h3><video controls playsinline preload="none" poster="${academicEscape(video.poster||'')}"><source src="${academicEscape(video.src)}" type="video/mp4"></video>${academicLink(video.src,'另開影片')}`).join('')||''}<div class="academic-source-actions">${academicLink(item.fullTextLink,'開放全文')}${academicLink(item.link,['publications','conferences'].includes(item.category)?'原文／出版頁面':'閱讀公開來源')}${academicLink(item.abstractLicense,'摘要授權')}${item.sourceUrl&&item.sourceUrl!==item.link?academicLink(item.sourceUrl,item.sourceLabel||'書目來源'):''}</div>${!item.summary&&['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">目前尚未查得可收錄的公開摘要，請由原文或書目來源查閱；不以題目推測研究結果。</p>':''}${item.previewLink?academicLink(item.previewLink,'出版社官方試閱'):''}${item.documents?.map(document=>academicLink(document.src,academicEscape(document.title))).join('')||''}${!item.summary&&!item.images?.length&&!item.link&&!['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">此筆依 CV 成果名錄呈現，尚無另附摘要或照片。</p>':''}`;
+  setupAmbientVideos(academicDetailBody);
   academicDetail.showModal();
 }
 function renderAcademicResults(){
