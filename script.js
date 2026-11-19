@@ -98,9 +98,52 @@ async function loadAdjunctFaculty(){
 
 const academicLabels={publications:'學術發表',projects:'計畫',conferences:'研討會與專書',patents:'專利'};
 const academicEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-let academicCatalog=[],academicCategory='projects',academicLimit=12,academicOwner='all',academicQuery='',academicVisibleRows=[];
-const academicResults=document.querySelector('#academic-results'),academicCount=document.querySelector('#academic-count'),academicMore=document.querySelector('#academic-more'),academicDetail=document.querySelector('#academic-detail'),academicDetailBody=document.querySelector('#academic-detail-body');
+let academicCatalog=[],academicCategory='publications',academicLimit=12,academicOwner='all',academicQuery='',academicVisibleRows=[];
+const academicResults=document.querySelector('#academic-results'),academicCount=document.querySelector('#academic-count'),academicSummary=document.querySelector('#academic-summary'),academicMore=document.querySelector('#academic-more'),academicDetail=document.querySelector('#academic-detail'),academicDetailBody=document.querySelector('#academic-detail-body');
 const academicLink=(url,label)=>url?`<a href="${academicEscape(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:'';
+const academicNumber=value=>new Intl.NumberFormat('zh-TW').format(value);
+const academicMoney=value=>`${new Intl.NumberFormat('zh-TW',{maximumFractionDigits:1}).format(value/10000)} 萬元`;
+function projectAmount(item){
+  const text=String(item.amount||item.meta||'').replaceAll(',','');
+  const mixed=text.match(/(\d+)萬(\d+)元/),wan=text.match(/([\d.]+)萬元/),yuan=text.match(/([\d]+)元/);
+  if(mixed)return Number(mixed[1])*10000+Number(mixed[2]);
+  if(wan)return Number(wan[1])*10000;
+  return yuan?Number(yuan[1]):0;
+}
+function projectAgency(item){
+  if(item.agency)return item.agency;
+  const parts=String(item.meta||'').split('｜');
+  return parts.find(part=>/(局|署|會|院|部|大學|學院|公司)$/.test(part.trim()))?.trim()||'其他／待確認';
+}
+function projectYear(item){return String(item.year||item.period||item.meta||'').match(/20\d{2}/)?.[0]||'待確認';}
+function agencyShort(name){return name.replace('國家科學及技術委員會','國科會（含科技部時期）').replace('科技部','國科會（含科技部時期）').replace('工業技術研究院','工研院').replace('國家中山科學研究院','中科院').replace('臺北市政府','臺北市');}
+function statBars(rows,formatter=value=>academicNumber(value)){
+  const max=Math.max(...rows.map(([,value])=>value),1);
+  return `<div class="academic-bars">${rows.map(([label,value])=>`<div class="academic-bar-row"><span>${academicEscape(label)}</span><i><b style="width:${Math.max(value/max*100,value?3:0)}%"></b></i><strong>${formatter(value)}</strong></div>`).join('')}</div>`;
+}
+function renderAcademicSummary(rows){
+  if(!academicSummary)return;
+  if(academicCategory==='publications'){
+    const explicitSci=rows.filter(item=>/(^|[^A-Z])SCI([^A-Z]|$)/i.test(`${item.citation||''} ${item.meta||''}`)).length;
+    const explicitScie=rows.filter(item=>/(^|[^A-Z])SCIE([^A-Z]|$)/i.test(`${item.citation||''} ${item.meta||''}`)).length;
+    const doi=rows.filter(item=>item.doi).length,years=rows.map(item=>Number(String(item.year||'').match(/20\d{2}/)?.[0])).filter(Boolean);
+    const quartiles=['Q1','Q2','Q3','Q4'].map(q=>[q,rows.filter(item=>String(item.quartile||'').toUpperCase()===q).length]);
+    const classified=quartiles.reduce((sum,[,value])=>sum+value,0),pending=Math.max(rows.length-classified,0);
+    academicSummary.innerHTML=`<div class="academic-summary-head"><div><p class="eyebrow">四級分區 / JOURNAL PROFILE</p><h3>國際期刊級距與發表量</h3></div><p>統計會隨教師篩選同步更新。</p></div><div class="academic-kpis"><article><strong>${academicNumber(rows.length)}</strong><span>已收錄學術發表</span></article><article><strong>${academicNumber(explicitSci)}</strong><span>原始書目明示 SCI</span></article><article><strong>${academicNumber(explicitScie)}</strong><span>原始書目明示 SCIE</span></article><article><strong>${academicNumber(doi)}</strong><span>具 DOI 可追溯記錄</span></article></div><div class="academic-chart-grid"><section><h4>JCR Q1–Q4 分區</h4>${statBars([...quartiles,['待查證',pending]])}</section><section class="academic-method"><h4>資料解讀</h4><p>目前成果檔未收錄發表當年度的 JCR 類別與分區，因此 Q1–Q4 不以期刊名稱推測。<strong>${academicNumber(pending)} 筆</strong>已清楚標示為待查證，不等於未收錄。</p><ul><li>SCI／SCIE 僅計原始書目已明示者</li><li>年份範圍：${years.length?Math.min(...years)+'–'+Math.max(...years):'待確認'}</li><li>DOI 覆蓋率：${rows.length?Math.round(doi/rows.length*100):0}%</li></ul></section></div>`;
+    return;
+  }
+  if(academicCategory==='projects'){
+    const unique=[...new Map(rows.map(item=>[`${item.title}|${projectYear(item)}|${projectAmount(item)}`,item])).values()];
+    const funded=unique.filter(item=>projectAmount(item)>0),total=funded.reduce((sum,item)=>sum+projectAmount(item),0);
+    const annual=new Map(),agencies=new Map();
+    funded.forEach(item=>{const year=projectYear(item),agency=agencyShort(projectAgency(item)),amount=projectAmount(item);annual.set(year,(annual.get(year)||0)+amount);const now=agencies.get(agency)||{count:0,amount:0};now.count++;now.amount+=amount;agencies.set(agency,now);});
+    const annualRows=[...annual].filter(([year])=>year!=='待確認').sort((a,b)=>a[0].localeCompare(b[0]));
+    const agencyRows=[...agencies].sort((a,b)=>b[1].amount-a[1].amount).map(([name,value])=>[`${name}（${value.count}件）`,value.amount]);
+    academicSummary.innerHTML=`<div class="academic-summary-head"><div><p class="eyebrow">FUNDED RESEARCH</p><h3>計畫經費與合作單位</h3></div><p>依計畫起始年度歸戶，跨年計畫不重複攤分。</p></div><div class="academic-kpis"><article><strong>${academicMoney(total)}</strong><span>可解析計畫總經費</span></article><article><strong>${academicNumber(unique.length)}</strong><span>去除完全重複後計畫</span></article><article><strong>${academicNumber(funded.length)}</strong><span>具明確經費記錄</span></article><article><strong>${academicNumber(agencies.size)}</strong><span>合作／委託單位</span></article></div><div class="academic-chart-grid"><section><h4>每年計畫經費</h4>${statBars(annualRows,academicMoney)}</section><section><h4>主要合作單位經費</h4>${statBars(agencyRows,academicMoney)}</section></div><p class="academic-data-note">統計來自現有成果名錄的「總經費」欄位；同一計畫若因多位教師重複收錄，以名稱、起始年與金額去重。非年度撥款額，不用於會計核銷。</p>`;
+    return;
+  }
+  academicSummary.innerHTML='';
+}
 function openAcademicDetail(item){
   const categoryLabel=academicLabels[item.category]||'學術成果';
   academicDetailBody.innerHTML=`<p class="eyebrow dark">${academicEscape(item.owner)} / ${categoryLabel}</p><h2>${academicEscape(item.title)}</h2><p>${academicEscape(item.meta||'')}</p>${item.summary?`<h3>${academicEscape(item.summaryLabel||'計畫／成果摘要')}</h3><p>${academicEscape(item.summary)}</p>`:''}${item.doi?`<p class="academic-doi"><b>DOI</b> ${academicEscape(item.doi)}</p>`:''}${item.citation?`<details class="academic-citation"><summary>完整書目</summary><p>${academicEscape(item.citation)}</p></details>`:''}${item.sharedProjectNote?`<p class="academic-detail-note">${academicEscape(item.sharedProjectNote)}</p>`:''}${item.agency?`<p>委託單位：${academicEscape(item.agency)}<br>執行期間：${academicEscape(item.period)}<br>參與角色：${academicEscape(item.role)}</p>`:''}${item.images?.length?`<div class="academic-detail-images">${item.images.map((url,index)=>`<figure><img src="${academicEscape(url)}" loading="lazy" alt="${academicEscape(item.imageCaptions?.[index]||item.title)}">${item.imageCaptions?.[index]?`<figcaption>${academicEscape(item.imageCaptions[index])}</figcaption>`:''}</figure>`).join('')}</div>`:''}${item.videos?.map(video=>`<h3>${academicEscape(video.title)}</h3><video controls playsinline preload="none" poster="${academicEscape(video.poster||'')}"><source src="${academicEscape(video.src)}" type="video/mp4"></video>${academicLink(video.src,'另開影片')}`).join('')||''}<div class="academic-source-actions">${academicLink(item.fullTextLink,'開放全文')}${academicLink(item.link,['publications','conferences'].includes(item.category)?'原文／出版頁面':'閱讀公開來源')}${academicLink(item.abstractLicense,'摘要授權')}${item.sourceUrl&&item.sourceUrl!==item.link?academicLink(item.sourceUrl,item.sourceLabel||'書目來源'):''}</div>${!item.summary&&['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">目前尚未查得可收錄的公開摘要，請由原文或書目來源查閱；不以題目推測研究結果。</p>':''}${item.previewLink?academicLink(item.previewLink,'出版社官方試閱'):''}${item.documents?.map(document=>academicLink(document.src,academicEscape(document.title))).join('')||''}${!item.summary&&!item.images?.length&&!item.link&&!['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">此筆依 CV 成果名錄呈現，尚無另附摘要或照片。</p>':''}`;
@@ -110,6 +153,7 @@ function openAcademicDetail(item){
 function renderAcademicResults(){
   if(!academicResults)return;
   academicVisibleRows=academicCatalog.filter(item=>item.category===academicCategory&&(academicOwner==='all'||item.owner===academicOwner)&&JSON.stringify(item).toLowerCase().includes(academicQuery.toLowerCase()));
+  renderAcademicSummary(academicVisibleRows);
   academicCount.textContent=`${academicLabels[academicCategory]}・符合條件 ${academicVisibleRows.length} 筆`;
   academicResults.innerHTML=academicVisibleRows.length?academicVisibleRows.slice(0,academicLimit).map((item,index)=>`<button class="academic-result" data-academic-result="${index}"><div><h3>${academicEscape(item.title)}</h3><p>${academicEscape(item.owner)}${item.year?' / '+academicEscape(item.year):''}　${academicEscape(item.meta||'')}</p></div><span>查看 ＋</span></button>`).join(''):'<p class="academic-empty">目前沒有符合條件的已收錄成果。</p>';
   academicMore.hidden=academicVisibleRows.length<=academicLimit;

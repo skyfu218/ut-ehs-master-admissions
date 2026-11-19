@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261118-3">
+  <link rel="stylesheet" href="styles.css?v=20261119-2">
   <link rel="stylesheet" href="legacy-sections.css?v=20261119-1">
 </head>
 <body>
@@ -99,8 +99,9 @@
 
     <section class="academic-explorer section" id="academic">
       <div class="academic-explorer-head"><div><p class="eyebrow">ACADEMIC CAPACITY</p><h2>學術量能，<br>從問題走向成果。</h2></div><p>從計畫摘要、論文到專利，看看運動專業如何累積成可分享的知識。</p></div>
-      <div class="academic-filters" aria-label="成果分類"><button data-academic-category="publications" aria-pressed="false">學術發表</button><button class="active" data-academic-category="projects" aria-pressed="true">計畫</button><button data-academic-category="conferences" aria-pressed="false">研討會與專書</button><button data-academic-category="patents" aria-pressed="false">專利</button></div>
+      <div class="academic-filters" aria-label="成果分類"><button class="active" data-academic-category="publications" aria-pressed="true">學術發表</button><button data-academic-category="projects" aria-pressed="false">計畫</button><button data-academic-category="conferences" aria-pressed="false">研討會與專書</button><button data-academic-category="patents" aria-pressed="false">專利</button></div>
       <div class="academic-search-row"><input id="academic-search" type="search" placeholder="搜尋研究主題、關鍵字…" aria-label="搜尋學術成果"><select id="academic-owner" aria-label="選擇成果資料來源"><option value="all">全部已收錄教師</option></select></div>
+      <div id="academic-summary" class="academic-summary" aria-live="polite"></div>
       <p class="academic-result-count" id="academic-count" aria-live="polite">正在載入學術成果…</p><div id="academic-results"></div><button id="academic-more" class="academic-more" hidden>載入更多成果 ↓</button>
       <p class="academic-note">資料依教師 CV、校方著作表、作者識別資料及出版來源整理，非全系完整成果總量。摘要標示為導讀、原文或節錄；未公開者保留名錄。原文全文可能需要圖書館權限。</p>
     </section>
@@ -112,6 +113,6 @@
   </main>
   <dialog id="academic-detail"><button class="academic-close" aria-label="關閉學術成果內容">✕</button><div id="academic-detail-body"></div></dialog>
   <footer><div><strong>臺北市立大學 運動健康科學系</strong><p>天母校區｜臺北市士林區忠誠路二段 101 號<br>招生洽詢：(02) 2871-8288 分機 6402</p></div><div><a href="https://ehs.utaipei.edu.tw/" target="_blank" rel="noreferrer">系所官網</a><a href="https://admission.utaipei.edu.tw/" target="_blank" rel="noreferrer">招生組</a><p>招生規定以學校正式公告為準。</p></div></footer>
-  <script src="script.js?v=20261119-1"></script>
+  <script src="script.js?v=20261119-2"></script>
 </body>
 </html>
