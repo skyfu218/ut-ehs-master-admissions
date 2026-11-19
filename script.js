@@ -124,6 +124,32 @@ const academicResults=document.querySelector('#academic-results'),academicCount=
 const academicLink=(url,label)=>url?`<a href="${academicEscape(url)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:'';
 const academicNumber=value=>new Intl.NumberFormat('zh-TW').format(value);
 const academicMoney=value=>`${new Intl.NumberFormat('zh-TW',{maximumFractionDigits:1}).format(value/10000)} 萬元`;
+const jcrSource='https://chospab.es/biblioteca/DOCUMENTOS/factor_impacto/2024.pdf';
+const jcrProfiles={
+  'journal of functional morphology and kinesiology':{impactFactor:2.5,quartile:'Q2',edition:'ESCI',jcrCategory:'SPORT SCIENCES'},
+  'journal of the chinese medical association':{impactFactor:2.4,quartile:'Q1',edition:'SCIE',jcrCategory:'MEDICINE, GENERAL & INTERNAL'},
+  'life':{impactFactor:3.4,quartile:'Q1',edition:'SCIE',jcrCategory:'BIOLOGY'},
+  'life-basel':{impactFactor:3.4,quartile:'Q1',edition:'SCIE',jcrCategory:'BIOLOGY'},
+  'american journal of physiology-lung cellular and molecular physiology':{impactFactor:3.5,quartile:'Q1',edition:'SCIE',jcrCategory:'PHYSIOLOGY / RESPIRATORY SYSTEM'},
+  'medicine & science in sports & exercise':{impactFactor:3.9,quartile:'Q1',edition:'SCIE',jcrCategory:'SPORT SCIENCES'},
+  'biomedical reports':{impactFactor:1.9,quartile:'Q3',edition:'ESCI',jcrCategory:'MEDICINE, RESEARCH & EXPERIMENTAL'},
+  'frontiers in cardiovascular medicine':{impactFactor:2.9,quartile:'Q2',edition:'SCIE',jcrCategory:'CARDIAC & CARDIOVASCULAR SYSTEMS'},
+  'nutrients':{impactFactor:5,quartile:'Q1',edition:'SCIE',jcrCategory:'NUTRITION & DIETETICS'},
+  'scientific reports':{impactFactor:3.9,quartile:'Q1',edition:'SCIE',jcrCategory:'MULTIDISCIPLINARY SCIENCES'},
+  'frontiers in physiology':{impactFactor:3.4,quartile:'Q1',edition:'SCIE',jcrCategory:'PHYSIOLOGY'},
+  'journal of strength and conditioning research':{impactFactor:3,quartile:'Q1',edition:'SCIE',jcrCategory:'SPORT SCIENCES'},
+  'archives of physical medicine and rehabilitation':{impactFactor:3.7,quartile:'Q1',edition:'SCIE',jcrCategory:'REHABILITATION'},
+  'gait & posture':{impactFactor:2.4,quartile:'Q2',edition:'SCIE',jcrCategory:'ORTHOPEDICS / SPORT SCIENCES / NEUROSCIENCES'}
+};
+const normalizeJournal=value=>String(value||'').toLowerCase().replace(/\s+/g,' ').replace(/[.,;:]$/,'').trim();
+function attachJcrProfile(item){
+  if(item.category!=='publications')return item;
+  const journal=String(item.meta||'').split('｜')[0].trim(),profile=jcrProfiles[normalizeJournal(journal)];
+  return profile?{...item,...profile,jcrYear:2024,jcrJournal:journal,jcrSource}:item;
+}
+function jcrBadge(item){
+  return item.jcrYear?`<span class="academic-jcr-badge">${item.jcrYear} JCR · IF ${academicEscape(item.impactFactor)} · ${academicEscape(item.quartile)} · ${academicEscape(item.edition)} · Ranking 公開表未提供</span>`:'';
+}
 function projectAmount(item){
   const text=String(item.amount||item.meta||'').replaceAll(',','');
   const mixed=text.match(/(\d+)萬(\d+)元/),wan=text.match(/([\d.]+)萬元/),yuan=text.match(/([\d]+)元/);
@@ -145,12 +171,11 @@ function statBars(rows,formatter=value=>academicNumber(value)){
 function renderAcademicSummary(rows){
   if(!academicSummary)return;
   if(academicCategory==='publications'){
-    const explicitSci=rows.filter(item=>/(^|[^A-Z])SCI([^A-Z]|$)/i.test(`${item.citation||''} ${item.meta||''}`)).length;
-    const explicitScie=rows.filter(item=>/(^|[^A-Z])SCIE([^A-Z]|$)/i.test(`${item.citation||''} ${item.meta||''}`)).length;
+    const verified=rows.filter(item=>item.jcrYear===2024),scie=verified.filter(item=>item.edition==='SCIE').length,esci=verified.filter(item=>item.edition==='ESCI').length;
     const doi=rows.filter(item=>item.doi).length,years=rows.map(item=>Number(String(item.year||'').match(/20\d{2}/)?.[0])).filter(Boolean);
     const quartiles=['Q1','Q2','Q3','Q4'].map(q=>[q,rows.filter(item=>String(item.quartile||'').toUpperCase()===q).length]);
     const classified=quartiles.reduce((sum,[,value])=>sum+value,0),pending=Math.max(rows.length-classified,0);
-    academicSummary.innerHTML=`<div class="academic-summary-head"><div><p class="eyebrow">四級分區 / JOURNAL PROFILE</p><h3>國際期刊級距與發表量</h3></div><p>統計會隨教師篩選同步更新。</p></div><div class="academic-kpis"><article><strong>${academicNumber(rows.length)}</strong><span>已收錄學術發表</span></article><article><strong>${academicNumber(explicitSci)}</strong><span>原始書目明示 SCI</span></article><article><strong>${academicNumber(explicitScie)}</strong><span>原始書目明示 SCIE</span></article><article><strong>${academicNumber(doi)}</strong><span>具 DOI 可追溯記錄</span></article></div><div class="academic-chart-grid"><section><h4>JCR Q1–Q4 分區</h4>${statBars([...quartiles,['待查證',pending]])}</section><section class="academic-method"><h4>資料解讀</h4><p>目前成果檔未收錄發表當年度的 JCR 類別與分區，因此 Q1–Q4 不以期刊名稱推測。<strong>${academicNumber(pending)} 筆</strong>已清楚標示為待查證，不等於未收錄。</p><ul><li>SCI／SCIE 僅計原始書目已明示者</li><li>年份範圍：${years.length?Math.min(...years)+'–'+Math.max(...years):'待確認'}</li><li>DOI 覆蓋率：${rows.length?Math.round(doi/rows.length*100):0}%</li></ul></section></div>`;
+    academicSummary.innerHTML=`<div class="academic-summary-head"><div><p class="eyebrow">四級分區 / JOURNAL PROFILE</p><h3>國際期刊級距與發表量</h3></div><p>以 2024 JCR 作為一致比較年度；統計會隨教師篩選同步更新。</p></div><div class="academic-kpis"><article><strong>${academicNumber(verified.length)}</strong><span>已核對 2024 JCR 期刊紀錄</span></article><article><strong>${academicNumber(scie)}</strong><span>SCIE 期刊紀錄</span></article><article><strong>${academicNumber(esci)}</strong><span>ESCI 期刊紀錄</span></article><article><strong>${academicNumber(doi)}</strong><span>具 DOI 可追溯記錄</span></article></div><div class="academic-chart-grid"><section><h4>2024 JCR Q1–Q4 分區</h4>${statBars([...quartiles,['待查證',pending]])}</section><section class="academic-method"><h4>資料解讀</h4><p>JIF 與分區是<strong>期刊層級指標</strong>，不是單篇論文分數。本站以公開 2024 JCR 表核對期刊名稱；<strong>${academicNumber(pending)} 筆</strong>未匹配者保留待查證，不以名稱推測。</p><ul><li>年份範圍：${years.length?Math.min(...years)+'–'+Math.max(...years):'待確認'}</li><li>DOI 覆蓋率：${rows.length?Math.round(doi/rows.length*100):0}%</li><li>完整 Ranking 分子／分母未見於公開表，故不自行推估</li></ul>${academicLink(jcrSource,'查看公開 2024 JCR 表')}</section></div>`;
     return;
   }
   if(academicCategory==='projects'){
@@ -167,7 +192,10 @@ function renderAcademicSummary(rows){
 }
 function openAcademicDetail(item){
   const categoryLabel=academicLabels[item.category]||'學術成果';
-  academicDetailBody.innerHTML=`<p class="eyebrow dark">${academicEscape(item.owner)} / ${categoryLabel}</p><h2>${academicEscape(item.title)}</h2><p>${academicEscape(item.meta||'')}</p>${item.summary?`<h3>${academicEscape(item.summaryLabel||'計畫／成果摘要')}</h3><p>${academicEscape(item.summary)}</p>`:''}${item.doi?`<p class="academic-doi"><b>DOI</b> ${academicEscape(item.doi)}</p>`:''}${item.citation?`<details class="academic-citation"><summary>完整書目</summary><p>${academicEscape(item.citation)}</p></details>`:''}${item.sharedProjectNote?`<p class="academic-detail-note">${academicEscape(item.sharedProjectNote)}</p>`:''}${item.agency?`<p>委託單位：${academicEscape(item.agency)}<br>執行期間：${academicEscape(item.period)}<br>參與角色：${academicEscape(item.role)}</p>`:''}${item.images?.length?`<div class="academic-detail-images">${item.images.map((url,index)=>`<figure><img src="${academicEscape(url)}" loading="lazy" alt="${academicEscape(item.imageCaptions?.[index]||item.title)}">${item.imageCaptions?.[index]?`<figcaption>${academicEscape(item.imageCaptions[index])}</figcaption>`:''}</figure>`).join('')}</div>`:''}${item.videos?.map(video=>`<h3>${academicEscape(video.title)}</h3><video controls playsinline preload="none" poster="${academicEscape(video.poster||'')}"><source src="${academicEscape(video.src)}" type="video/mp4"></video>${academicLink(video.src,'另開影片')}`).join('')||''}<div class="academic-source-actions">${academicLink(item.fullTextLink,'開放全文')}${academicLink(item.link,['publications','conferences'].includes(item.category)?'原文／出版頁面':'閱讀公開來源')}${academicLink(item.abstractLicense,'摘要授權')}${item.sourceUrl&&item.sourceUrl!==item.link?academicLink(item.sourceUrl,item.sourceLabel||'書目來源'):''}</div>${!item.summary&&['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">目前尚未查得可收錄的公開摘要，請由原文或書目來源查閱；不以題目推測研究結果。</p>':''}${item.previewLink?academicLink(item.previewLink,'出版社官方試閱'):''}${item.documents?.map(document=>academicLink(document.src,academicEscape(document.title))).join('')||''}${!item.summary&&!item.images?.length&&!item.link&&!['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">此筆依 CV 成果名錄呈現，尚無另附摘要或照片。</p>':''}`;
+  const jcrDetail=item.jcrYear?`<p class="academic-jcr-detail"><b>期刊指標（${item.jcrYear} JCR）</b><br>Impact Factor：${academicEscape(item.impactFactor)}｜分區：${academicEscape(item.quartile)}｜收錄：${academicEscape(item.edition)}<br>類別：${academicEscape(item.jcrCategory)}<br>Ranking：公開表未提供完整分子／分母，未自行推估。</p>`:'';
+  const media=item.images?.length?`<div class="academic-detail-images">${item.images.map((url,index)=>`<figure><img src="${academicEscape(url)}" loading="lazy" alt="${academicEscape(item.imageCaptions?.[index]||item.title)}">${item.imageCaptions?.[index]?`<figcaption>${academicEscape(item.imageCaptions[index])}</figcaption>`:''}</figure>`).join('')}</div>`:'';
+  const videos=item.videos?.map(video=>`<h3>${academicEscape(video.title)}</h3><video controls playsinline preload="none" poster="${academicEscape(video.poster||'')}"><source src="${academicEscape(video.src)}" type="video/mp4"></video>${academicLink(video.src,'另開影片')}`).join('')||'';
+  academicDetailBody.innerHTML=`<p class="eyebrow dark">${academicEscape(item.owner)} / ${categoryLabel}</p><h2>${academicEscape(item.title)}</h2><p>${academicEscape(item.meta||'')}</p>${jcrBadge(item)}${jcrDetail}${item.summary?`<h3>${academicEscape(item.summaryLabel||'計畫／成果摘要')}</h3><p>${academicEscape(item.summary)}</p>`:''}${item.doi?`<p class="academic-doi"><b>DOI</b> ${academicEscape(item.doi)}</p>`:''}${item.citation?`<details class="academic-citation"><summary>完整書目</summary><p>${academicEscape(item.citation)}</p></details>`:''}${item.sharedProjectNote?`<p class="academic-detail-note">${academicEscape(item.sharedProjectNote)}</p>`:''}${item.agency?`<p>委託單位：${academicEscape(item.agency)}<br>執行期間：${academicEscape(item.period)}<br>參與角色：${academicEscape(item.role)}</p>`:''}${media}${videos}<div class="academic-source-actions">${academicLink(item.fullTextLink,'開放全文')}${academicLink(item.link,['publications','conferences'].includes(item.category)?'原文／出版頁面':'閱讀公開來源')}${academicLink(item.abstractLicense,'摘要授權')}${item.sourceUrl&&item.sourceUrl!==item.link?academicLink(item.sourceUrl,item.sourceLabel||'書目來源'):''}${academicLink(item.jcrSource,'2024 JCR 公開表')}</div>${!item.summary&&['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">目前尚未查得可收錄的公開摘要，請由原文或書目來源查閱；不以題目推測研究結果。</p>':''}${item.previewLink?academicLink(item.previewLink,'出版社官方試閱'):''}${item.documents?.map(document=>academicLink(document.src,academicEscape(document.title))).join('')||''}${!item.summary&&!item.images?.length&&!item.link&&!['publications','conferences'].includes(item.category)?'<p class="academic-detail-note">此筆依 CV 成果名錄呈現，尚無另附摘要或照片。</p>':''}`;
   setupAmbientVideos(academicDetailBody);
   academicDetail.showModal();
 }
@@ -176,7 +204,7 @@ function renderAcademicResults(){
   academicVisibleRows=academicCatalog.filter(item=>item.category===academicCategory&&(academicOwner==='all'||item.owner===academicOwner)&&JSON.stringify(item).toLowerCase().includes(academicQuery.toLowerCase()));
   renderAcademicSummary(academicVisibleRows);
   academicCount.textContent=`${academicLabels[academicCategory]}・符合條件 ${academicVisibleRows.length} 筆`;
-  academicResults.innerHTML=academicVisibleRows.length?academicVisibleRows.slice(0,academicLimit).map((item,index)=>`<button class="academic-result" data-academic-result="${index}"><div><h3>${academicEscape(item.title)}</h3><p>${academicEscape(item.owner)}${item.year?' / '+academicEscape(item.year):''}　${academicEscape(item.meta||'')}</p></div><span>查看 ＋</span></button>`).join(''):'<p class="academic-empty">目前沒有符合條件的已收錄成果。</p>';
+  academicResults.innerHTML=academicVisibleRows.length?academicVisibleRows.slice(0,academicLimit).map((item,index)=>`<button class="academic-result" data-academic-result="${index}"><div><h3>${academicEscape(item.title)}</h3><p>${academicEscape(item.owner)}${item.year?' / '+academicEscape(item.year):''}　${academicEscape(item.meta||'')}</p>${jcrBadge(item)}</div><span>查看 ＋</span></button>`).join(''):'<p class="academic-empty">目前沒有符合條件的已收錄成果。</p>';
   academicMore.hidden=academicVisibleRows.length<=academicLimit;
   document.querySelectorAll('[data-academic-result]').forEach(button=>button.addEventListener('click',()=>openAcademicDetail(academicVisibleRows[Number(button.dataset.academicResult)])));
 }
@@ -185,7 +213,7 @@ async function loadAcademicExplorer(){
   try{
     const response=await fetch('assets/data/faculty-academic.json?v=20261118-1');
     if(!response.ok)throw new Error('academic data');
-    academicCatalog=await response.json();
+    academicCatalog=(await response.json()).map(attachJcrProfile);
     const owners=[...new Set(academicCatalog.map(item=>item.owner).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
     document.querySelector('#academic-owner').insertAdjacentHTML('beforeend',owners.map(name=>`<option value="${academicEscape(name)}">${academicEscape(name)}</option>`).join(''));
     renderAcademicResults();
