@@ -51,3 +51,4 @@ body{overflow-x:hidden}.academic-explorer{background:#294f48;color:#fff}.academi
 
 /* Verified journal-level metadata. */
 .academic-jcr-badge{display:inline-flex;flex-wrap:wrap;margin-top:12px;padding:7px 10px;border:1px solid #8eaa40;border-radius:999px;color:var(--lime);font-size:.7rem;line-height:1.45;letter-spacing:.02em}.academic-jcr-detail{padding:16px 18px;border-left:4px solid var(--lime);background:#e6ece9;font-size:.86rem}.academic-method>a{color:var(--lime)!important;margin:8px 0 0!important}
+#academic-detail .academic-jcr-badge{color:var(--ink);border-color:#6f9124;font-weight:700}
